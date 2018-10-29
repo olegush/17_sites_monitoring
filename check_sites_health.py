@@ -10,26 +10,28 @@ def load_urls4check(path):
 
 
 def is_server_respond_with_200(url):
-    site_request = requests.get(url)
-    return site_request.status_code == 200
+    response = requests.get(url)
+    return response.ok
 
 
 def get_whois_info(whois_server, domain):
     socket_obj = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    socket_obj.connect((whois_server, 43))
+    socket_port = 43
+    socket_obj.connect((whois_server, socket_port))
     socket_obj.send(("%s\r\n" % domain).encode("utf-8"))
-    result = b''
+    socket_data = b''
+    bufsize = 4096
     while True:
         try:
-            buffer = socket_obj.recv(4096)
+            buffer = socket_obj.recv(bufsize)
         except socket.error:
             break
         if buffer:
-            result += buffer
+            socket_data += buffer
         else:
             break
     socket_obj.close()
-    return result.decode("utf-8")
+    return socket_data.decode("utf-8")
 
 
 def get_domain_expire_date(whois_iana, whois_label, expire_labels, domain):
