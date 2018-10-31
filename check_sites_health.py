@@ -25,14 +25,15 @@ def is_server_respond_ok(url):
     return response.ok
 
 
-def get_domain_expire_date(domain):
+def get_domain_is_expire(domain, days_to_expire):
     whois_data = whois.whois(domain)
     if not whois_data['expiration_date']:
-        return 'no data'
+        return '-'
     elif isinstance(whois_data['expiration_date'], list):
-        return whois_data['expiration_date'][0]
+        date_expire = whois_data['expiration_date'][0]
     else:
-        return whois_data['expiration_date']
+        date_expire = whois_data['expiration_date']
+    return (date_expire - datetime.now()).days < days_to_expire
 
 
 if __name__ == '__main__':
@@ -51,10 +52,6 @@ if __name__ == '__main__':
           .format(days_to_expire))
     print('{:<25}{:^10}{:^10}'.format('SITE', 'STATUS', 'EXPIRE'))
     for url in urls:
-        date_expire = get_domain_expire_date(url)
-        if date_expire == 'no data':
-            is_expire = '-'
-        else:
-            is_expire = (date_expire - datetime.now()).days < days_to_expire
-        print('{:<25}{:^10}{:^10}'
-              .format(url, is_server_respond_ok(url), is_expire))
+        is_ok = is_server_respond_ok(url)
+        is_expire = get_domain_is_expire(url, days_to_expire)
+        print('{:<25}{:^10}{:^10}'.format(url, is_ok, is_expire))
