@@ -36,9 +36,9 @@ def get_domain_expire_date(domain):
 
 
 if __name__ == '__main__':
-    args = parser_args()
-    days_to_expire = args.days
-    filepath = args.filepath
+    whois_args = parser_args()
+    days_to_expire = whois_args.days
+    filepath = whois_args.filepath
     if not filepath:
         exit('No script parameter (path to txt file)')
     if not os.path.isfile(filepath):
