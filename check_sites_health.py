@@ -11,7 +11,8 @@ def get_args_parser():
     parser.add_argument('--days',
                         help='days to expire, 30 by default',
                         type=int,
-                        default=30)
+                        default=30
+                        )
     args = parser.parse_args()
     return args
 
@@ -29,21 +30,19 @@ def is_server_respond_ok(url):
         return False
 
 
-def get_domain_is_expire(domain, days_to_expire):
-    whois_data = whois.whois(domain)
+def get_domain_expiration_date(url):
+    whois_data = whois.whois(url)
     if isinstance(whois_data['expiration_date'], list):
         date_expire = whois_data['expiration_date'][0]
-    elif whois_data['expiration_date']:
-        date_expire = whois_data['expiration_date']
     else:
-        return 'No data'
-    return (date_expire - datetime.now()).days < days_to_expire
+        date_expire = whois_data['expiration_date']
+    return date_expire
 
 
 if __name__ == '__main__':
-    whois_args = get_args_parser()
-    days_to_expire = whois_args.days
-    filepath = whois_args.filepath
+    user_args = get_args_parser()
+    days_to_expire = user_args.days
+    filepath = user_args.filepath
     if not filepath:
         exit('No script parameter (path to txt file)')
     if not os.path.isfile(filepath):
@@ -54,9 +53,11 @@ if __name__ == '__main__':
           .format(days_to_expire))
     print('{:<25}{:^10}{:^10}'.format('SITE', 'STATUS', 'EXPIRE'))
     for url in urls:
-        is_ok = is_server_respond_ok(url)
-        if is_ok:
-            is_expire = get_domain_is_expire(url, days_to_expire)
+        status_ok = is_server_respond_ok(url)
+        date_expire = get_domain_expiration_date(url)
+        date_now = datetime.now()
+        if status_ok and date_expire:
+            status_expire = (date_expire - date_now).days < days_to_expire
         else:
-            is_expire = 'Error'
-        print('{:<25}{:^10}{:^10}'.format(url, is_ok, is_expire))
+            status_expire = 'no data'
+        print('{:<25}{:^10}{:^10}'.format(url, status_ok, status_expire))
