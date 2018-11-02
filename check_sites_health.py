@@ -8,11 +8,12 @@ import whois
 def get_args_parser():
     parser = argparse.ArgumentParser(description='Sites Monitoring Utility')
     parser.add_argument('filepath', help='path to file with urls')
-    parser.add_argument('--days',
-                        help='days to expire, 30 by default',
-                        type=int,
-                        default=30
-                        )
+    parser.add_argument(
+        '--days',
+        help='days to expire, 30 by default',
+        type=int,
+        default=30
+    )
     args = parser.parse_args()
     return args
 
