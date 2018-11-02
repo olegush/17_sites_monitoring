@@ -16,14 +16,16 @@ Run **check_sites_health.py** with path to text file containing domain names
 
 ```bash
 
-$ python check_sites_health.py <filepath>
+$ python check_sites_health.py <filepath> [days]
 
-Server responds (is respond with status 200)
-and domains expiration (is domain expires less than 30 days:
+Server responds (is respond with status OK) and
+domains expiration (is domain expires less than 30 days:
 
 SITE                       STATUS    EXPIRE
+http://www.google.xyz        0      no data
 http://www.google.com        1         0
 http://google.ru             1         0
+http://google.ua             1      no data
 http://google.co             1         0
 http://google.net            1         0
 http://www.google.us         1         0
